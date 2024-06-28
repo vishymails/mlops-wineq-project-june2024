@@ -1,0 +1,74 @@
+schema: '2.0'
+stages:
+  load_data:
+    cmd: python src/load_data.py --config=params.yaml
+    deps:
+    - path: data_given/winequality.csv
+      hash: md5
+      md5: ccc8d3507eb151f53f760d36abdef888
+      size: 91998
+    - path: src/get_data.py
+      hash: md5
+      md5: 0bc3bf0ee096dd6008c6a5546d723f28
+      size: 660
+    - path: src/load_data.py
+      hash: md5
+      md5: 9e4a3d24f17f5d1f57b6b56f66d03ea0
+      size: 614
+    outs:
+    - path: data/raw/winequality.csv
+      hash: md5
+      md5: 069b522b0321bc25a626ceeffcb8eb44
+      size: 93598
+  split_data:
+    cmd: python src/split_data.py --config=params.yaml
+    deps:
+    - path: data/raw/winequality.csv
+      hash: md5
+      md5: 069b522b0321bc25a626ceeffcb8eb44
+      size: 93598
+    - path: src/split_data.py
+      hash: md5
+      md5: ec48dcf566edb91dc071fd4436301468
+      size: 1013
+    outs:
+    - path: data/processed/test_winequality.csv
+      hash: md5
+      md5: ee3284843265e5855bc07dd6427ab1c2
+      size: 18831
+    - path: data/processed/train_winequality.csv
+      hash: md5
+      md5: 81dce00e053ba5ebabeacf8e7dca537a
+      size: 74913
+  train_and_evaluate:
+    cmd: python src/train_and_evaluate.py --config=params.yaml
+    deps:
+    - path: data/processed/test_winequality.csv
+      hash: md5
+      md5: ee3284843265e5855bc07dd6427ab1c2
+      size: 18831
+    - path: data/processed/train_winequality.csv
+      hash: md5
+      md5: 81dce00e053ba5ebabeacf8e7dca537a
+      size: 74913
+    - path: src/train_and_evaluate.py
+      hash: md5
+      md5: 4b863fb8edffb0cefe37f86659aedc10
+      size: 2577
+    params:
+      params.yaml:
+        estimators.ElasticNet.params.alpha: 0.2
+        estimators.ElasticNet.params.l1_ratio: 0.2
+    outs:
+    - path: report/params.json
+      hash: md5
+      md5: 206abbb644d03dffa66a83232efc7449
+      size: 44
+    - path: report/scores.json
+      hash: md5
+      md5: e4857c9d33a4282682075912fbc4795c
+      size: 100
+    - path: saved_models/model.joblib
+      hash: md5
+      md5: 9a9fcc9eabdf074dcc5e76d0bb839cf1
+      size: 1279
